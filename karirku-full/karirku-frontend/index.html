@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KarirKu — Temukan Pekerjaan Impianmu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <rect width="28" height="28" rx="8" fill="#F5A623"/>
+          <path d="M7 10h14M7 14h10M7 18h12" stroke="#0F2756" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        KarirKu
+      </a>
+      <nav class="nav">
+        <a href="index.html" class="nav-link active">Lowongan</a>
+        <a href="#" class="nav-link">Perusahaan</a>
+        <a href="#" class="nav-link">Panduan Karir</a>
+      </nav>
+      <button class="btn btn-primary" onclick="openModal('postModal')">+ Pasang Lowongan</button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <p class="hero-eyebrow">🇮🇩 Portal Karir Indonesia</p>
+        <h1 class="hero-title">Langkah pertama<br/><span class="hero-accent">karir terbaikmu.</span></h1>
+        <p class="hero-sub">Ribuan lowongan dari perusahaan terpercaya. Lamar sekarang, raih karirmu.</p>
+      </div>
+      <div class="search-box">
+        <div class="search-field">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="searchInput" placeholder="Posisi, perusahaan, atau kata kunci…" autocomplete="off" />
+        </div>
+        <div class="search-field search-field--loc">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <input type="text" id="lokasiInput" placeholder="Kota atau remote…" autocomplete="off" />
+        </div>
+        <button class="btn btn-primary btn-search" onclick="doSearch()">Cari Lowongan</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="container stats-inner">
+      <div class="stat-item">
+        <span class="stat-num" id="statTotal">—</span>
+        <span class="stat-label">Lowongan aktif</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num">120+</span>
+        <span class="stat-label">Perusahaan terdaftar</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num">3.4rb</span>
+        <span class="stat-label">Pelamar bulan ini</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="main-layout">
+    <div class="container main-inner">
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="filter-group">
+          <h3 class="filter-title">Jenis Pekerjaan</h3>
+          <label class="filter-check"><input type="checkbox" value="FULL_TIME" checked onchange="applyFilters()" /><span>Full-time</span></label>
+          <label class="filter-check"><input type="checkbox" value="PART_TIME" checked onchange="applyFilters()" /><span>Part-time</span></label>
+          <label class="filter-check"><input type="checkbox" value="FREELANCE" checked onchange="applyFilters()" /><span>Freelance</span></label>
+          <label class="filter-check"><input type="checkbox" value="INTERNSHIP" checked onchange="applyFilters()" /><span>Magang</span></label>
+        </div>
+        <div class="filter-group">
+          <h3 class="filter-title">Kategori</h3>
+          <label class="filter-check"><input type="checkbox" value="TEKNOLOGI" checked onchange="applyFilters()" /><span>Teknologi</span></label>
+          <label class="filter-check"><input type="checkbox" value="DESAIN" checked onchange="applyFilters()" /><span>Desain</span></label>
+          <label class="filter-check"><input type="checkbox" value="MARKETING" checked onchange="applyFilters()" /><span>Marketing</span></label>
+          <label class="filter-check"><input type="checkbox" value="KEUANGAN" checked onchange="applyFilters()" /><span>Keuangan</span></label>
+          <label class="filter-check"><input type="checkbox" value="OPERASIONAL" checked onchange="applyFilters()" /><span>Operasional</span></label>
+        </div>
+        <div class="filter-group">
+          <h3 class="filter-title">Mode Kerja</h3>
+          <label class="filter-check"><input type="checkbox" id="filterRemote" onchange="applyFilters()" /><span>Remote saja</span></label>
+        </div>
+        <button class="btn btn-ghost btn-block" onclick="resetFilters()">Reset Semua Filter</button>
+      </aside>
+
+      <!-- JOB LIST -->
+      <section class="job-section">
+        <div class="section-bar">
+          <p class="result-count" id="resultCount">Memuat lowongan…</p>
+          <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+            <option value="latest">Terbaru</option>
+            <option value="featured">Featured dulu</option>
+          </select>
+        </div>
+
+        <!-- API Error Banner -->
+        <div class="api-error" id="apiError" style="display:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div>
+            <strong>Backend tidak terhubung.</strong>
+            Pastikan Spring Boot berjalan di <code>http://localhost:8080</code>, lalu <a href="#" onclick="loadJobs()">coba lagi</a>.
+          </div>
+        </div>
+
+        <div id="jobList" class="job-list"></div>
+        <div id="emptyState" class="empty-state" style="display:none">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C5CBD6" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <p>Tidak ada lowongan yang sesuai filter.</p>
+          <button class="btn btn-ghost" onclick="resetFilters()">Reset filter</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- MODAL: PASANG LOWONGAN -->
+  <div class="modal-bg" id="postModal">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 class="modal-title">Pasang Lowongan</h2>
+        <button class="modal-close" onclick="closeModal('postModal')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Judul Posisi *</label>
+            <input type="text" id="p_judul" placeholder="cth. Backend Developer Java" />
+          </div>
+          <div class="form-group">
+            <label>Nama Perusahaan *</label>
+            <input type="text" id="p_perusahaan" placeholder="cth. PT Maju Bersama" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Lokasi *</label>
+            <input type="text" id="p_lokasi" placeholder="cth. Jakarta / Bandung" />
+          </div>
+          <div class="form-group">
+            <label>Jenis Pekerjaan</label>
+            <select id="p_jenis">
+              <option value="FULL_TIME">Full-time</option>
+              <option value="PART_TIME">Part-time</option>
+              <option value="FREELANCE">Freelance</option>
+              <option value="INTERNSHIP">Magang</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Kategori</label>
+            <select id="p_kategori">
+              <option value="TEKNOLOGI">Teknologi</option>
+              <option value="DESAIN">Desain</option>
+              <option value="MARKETING">Marketing</option>
+              <option value="KEUANGAN">Keuangan</option>
+              <option value="OPERASIONAL">Operasional</option>
+              <option value="LAINNYA">Lainnya</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Pekerjaan Remote?</label>
+            <select id="p_remote">
+              <option value="false">Tidak</option>
+              <option value="true">Ya (Remote)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Gaji Min (Rp)</label>
+            <input type="text" id="p_gajiMin" placeholder="cth. 8000000" />
+          </div>
+          <div class="form-group">
+            <label>Gaji Max (Rp)</label>
+            <input type="text" id="p_gajiMax" placeholder="cth. 12000000" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Deskripsi Pekerjaan *</label>
+          <textarea id="p_deskripsi" rows="3" placeholder="Tanggung jawab dan lingkup pekerjaan…"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Kualifikasi</label>
+          <textarea id="p_kualifikasi" rows="2" placeholder="Persyaratan dan pengalaman yang dibutuhkan…"></textarea>
+        </div>
+        <div class="form-error" id="postError" style="display:none"></div>
+        <button class="btn btn-primary btn-block" onclick="submitLowongan()">Pasang Sekarang</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: LAMAR -->
+  <div class="modal-bg" id="lamarModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <p class="modal-eyebrow" id="lamar_perusahaan"></p>
+          <h2 class="modal-title" id="lamar_judul"></h2>
+        </div>
+        <button class="modal-close" onclick="closeModal('lamarModal')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nama Lengkap *</label>
+            <input type="text" id="l_nama" placeholder="Nama kamu" />
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="l_email" placeholder="email@contoh.com" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>No. Telepon</label>
+          <input type="tel" id="l_telp" placeholder="08xx-xxxx-xxxx" />
+        </div>
+        <div class="form-group">
+          <label>Motivasi / Cover Letter</label>
+          <textarea id="l_cover" rows="4" placeholder="Ceritakan mengapa kamu cocok untuk posisi ini…"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Link Portfolio / LinkedIn / GitHub</label>
+          <input type="url" id="l_portfolio" placeholder="https://…" />
+        </div>
+        <div class="form-error" id="lamarError" style="display:none"></div>
+        <button class="btn btn-primary btn-block" onclick="submitLamaran()">Kirim Lamaran</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
